@@ -1,0 +1,34 @@
+From 022409e99c9f6d6f1e540da5c2fa925b72998974 Mon Sep 17 00:00:00 2001
+From: Andreas Schneider <asn@cryptomilk.org>
+Date: Thu, 23 Jan 2020 10:20:59 +0100
+Subject: [PATCH] channels: Fix ssh_channel_poll_timeout() not returing
+ available bytes
+
+Fixes T211
+
+Signed-off-by: Andreas Schneider <asn@cryptomilk.org>
+Reviewed-by: Jakub Jelen <jjelen@redhat.com>
+Reviewed-by: Anderson Toshiyuki Sasaki <ansasaki@redhat.com>
+---
+ src/channels.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/channels.c b/src/channels.c
+index a670d895..05dcf8f6 100644
+--- a/src/channels.c
++++ b/src/channels.c
+@@ -3119,6 +3119,11 @@ int ssh_channel_poll_timeout(ssh_channel channel, int timeout, int is_stderr)
+     }
+     len = ssh_buffer_get_len(stdbuf);
+     if (len > 0) {
++        if (len > INT_MAX) {
++            rc = SSH_ERROR;
++        } else {
++            rc = (int)len;
++        }
+         goto out;
+     }
+     if (channel->remote_eof) {
+-- 
+2.20.1
+
