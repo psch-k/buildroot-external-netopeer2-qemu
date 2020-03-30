@@ -1,0 +1,28 @@
+From d5568bcb303b6f6b5e11169880436c992362cdf1 Mon Sep 17 00:00:00 2001
+From: Heiko Thiery <heiko.thiery@gmail.com>
+Date: Mon, 30 Mar 2020 11:13:13 +0200
+Subject: [PATCH] channels: Fix typ of len variable
+
+The return value of ssh_buffer_get_len is uint32_t instead of size_t.
+
+Signed-off-by: Heiko Thiery <heiko.thiery@gmail.com>
+---
+ src/channels.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/channels.c b/src/channels.c
+index 05dcf8f6..5601df80 100644
+--- a/src/channels.c
++++ b/src/channels.c
+@@ -3092,7 +3092,7 @@ int ssh_channel_poll_timeout(ssh_channel channel, int timeout, int is_stderr)
+     ssh_session session;
+     ssh_buffer stdbuf;
+     struct ssh_channel_read_termination_struct ctx;
+-    size_t len;
++    uint32_t len;
+     int rc;
+ 
+     if(channel == NULL) {
+-- 
+2.20.1
+

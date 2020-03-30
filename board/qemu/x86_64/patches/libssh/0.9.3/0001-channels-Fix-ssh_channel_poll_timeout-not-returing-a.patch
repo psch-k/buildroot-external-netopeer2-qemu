@@ -1,4 +1,4 @@
-From 022409e99c9f6d6f1e540da5c2fa925b72998974 Mon Sep 17 00:00:00 2001
+From 621503f556454a4201297f820a680b9138afb162 Mon Sep 17 00:00:00 2001
 From: Andreas Schneider <asn@cryptomilk.org>
 Date: Thu, 23 Jan 2020 10:20:59 +0100
 Subject: [PATCH] channels: Fix ssh_channel_poll_timeout() not returing
