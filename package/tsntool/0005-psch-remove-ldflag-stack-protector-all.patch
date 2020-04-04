@@ -1,0 +1,19 @@
+diff -Naur a/Makefile b/Makefile
+--- a/Makefile	2020-04-01 17:35:11.305931887 +0200
++++ b/Makefile	2020-04-01 17:35:52.940754949 +0200
+@@ -6,13 +6,13 @@
+ PKG_CONFIG ?= pkg-config
+ LIB_CFLAGS   = $(CFLAGS)
+ LIB_LDFLAGS  ?= $(LDFLAGS)
+-LIB_CFLAGS  += -Wall -Wextra -g -fstack-protector-all -Ilib -fPIC
++LIB_CFLAGS  += -Wall -Wextra -g -Ilib -fPIC
+ LIB_CFLAGS  += -Iinclude $(shell $(PKG_CONFIG) --cflags libnl-3.0 libnl-genl-3.0) $(shell $(PKG_CONFIG) --cflags libcjson) -Imain
+ #LIB_LDFLAGS += -lnl-3
+ 
+ BIN_CFLAGS   = $(CFLAGS)
+ BIN_LDFLAGS  = $(LDFLAGS)
+-BIN_CFLAGS  += -Wall -Wextra -Wno-error=unused-parameter -Wno-error=sign-compare -Wno-format-security -g -fstack-protector-all -Imain
++BIN_CFLAGS  += -Wall -Wextra -Wno-error=unused-parameter -Wno-error=sign-compare -Wno-format-security -g -Imain
+ BIN_CFLAGS  += $(shell $(PKG_CONFIG) --cflags libnl-3.0 libnl-genl-3.0 libcjson) -Iinclude
+ BIN_LDFLAGS += -ltsn $(shell $(PKG_CONFIG) --libs libnl-3.0 libnl-genl-3.0 libcjson) -lpthread -lm -lrt
+ BIN_LDFLAGS += -lreadline -lncurses -L.

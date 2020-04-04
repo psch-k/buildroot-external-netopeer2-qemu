@@ -1,0 +1,27 @@
+################################################################################
+#
+# tsntool
+#
+################################################################################
+
+TSNTOOL_VERSION = LSDK-19.09
+TSNTOOL_SITE = https://source.codeaurora.org/external/qoriq/qoriq-components/tsntool
+TSNTOOL_SITE_METHOD = git
+TSNTOOL_LICENSE = MIT or GPL-2.0+
+TSNTOOL_LICENSE_FILES = LICENSE
+TSNTOOL_INSTALL_STAGING = YES
+TSNTOOL_DEPENDENCIES = linux-headers libnl readline ncurses cjson
+
+define TSNTOOL_BUILD_CMDS
+	$(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D) build
+endef
+
+define TSNTOOL_INSTALL_STAGING_CMDS
+	$(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D) DESTDIR=$(STAGING_DIR) install
+endef
+
+define TSNTOOL_INSTALL_TARGET_CMDS
+	$(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D) DESTDIR=$(TARGET_DIR) install
+endef
+
+$(eval $(generic-package))

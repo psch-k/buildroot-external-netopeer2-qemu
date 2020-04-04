@@ -1,0 +1,11 @@
+config BR2_PACKAGE_SYSREPO_TSN
+	bool "Sysrepo-TSN"
+	default n
+	select BR2_PACKAGE_SYSREPO
+	select BR2_PACKAGE_CJSON
+	select BR2_PACKAGE_LIBNL
+	select BR2_PACKAGE_LIBNL_TOOLS
+	select BR2_PACKAGE_TSNTOOL
+
+	help
+	  Sysrepo Plugin for OpenIL TSN
