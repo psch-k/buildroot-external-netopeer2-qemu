@@ -1,0 +1,17 @@
+config BR2_PACKAGE_SYSREPO_PLUGIN_IETF_INTERFACES
+	bool "Sysrepo-ietf-interfaces"
+	select BR2_PACKAGE_LIBGLIB2
+	select BR2_PACKAGE_LIBNL
+	select BR2_PACKAGE_SYSREPO
+
+	help
+	  Sysrepo Plugin for IETF Interfaces.
+
+if BR2_PACKAGE_SYSREPO_PLUGIN_IETF_INTERFACES
+
+config BR2_PACKAGE_SYSREPO_PLUGIN_IETF_INTERFACES_DEBUG
+	bool "sysrepo-plugin-ietf-interfaces-debug"
+	help
+	  Build plugin as executable.
+
+endif
