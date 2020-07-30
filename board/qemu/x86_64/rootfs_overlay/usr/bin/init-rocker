@@ -1,0 +1,8 @@
+#!/bin/sh
+
+ip link add name sw1 type bridge
+ip link set dev sw1 up
+ip link set dev eth1 master sw1 up
+ip link set dev eth2 master sw1 up
+ip link set dev eth3 master sw1 up
+ip link set dev eth4 master sw1 up
