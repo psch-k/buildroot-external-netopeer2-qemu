@@ -63,7 +63,7 @@ killall sysrepo-plugind
 killall sysrepo-plugin-interfaces
 killall sysrepo-tsn
 rm -rf /etc/sysrepo/*
-rm -rf /dev/shm/sr_*
+rm -rf /dev/shm/sr_* /dev/shm/srsub_*
 
 if [ "${INSTALL_NETOP2_SRV_MODULES}" -ne 0 ]; then
 #####################
