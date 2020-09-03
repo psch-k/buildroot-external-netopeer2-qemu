@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SYSREPO_TSN_VERSION = 6113d9246cfce2c3a3c427207afde30da4045f90
+SYSREPO_TSN_VERSION = 652048a10257b4ac900a41ebe3bd263f0ccfcee3
 SYSREPO_TSN_SITE = git://git.sab.local/sl28/sysrepo-tsn.git
 SYSREPO_TSN_LICENSE = Apache-2.0
 SYSREPO_TSN_REDISTRIBUTE = NO
