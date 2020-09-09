@@ -2,15 +2,15 @@
 
 BRIDGE=qbr0
 
-ifconfig ${BRIDGE} > /dev/null 2>&1
-if [ ${?} -ne 0 ]; then
-    ip link add ${BRIDGE} type bridge
-    ifconfig ${BRIDGE} 192.168.200.1 up
+ifconfig "${BRIDGE}" > /dev/null 2>&1
+if [ "${?}" -ne 0 ]; then
+    ip link add "${BRIDGE}" type bridge
+    ifconfig "${BRIDGE}" 192.168.200.1 up
 fi
 
 if [ -n "${1}" ]; then
-    ip link set ${1} up
-    ip link set ${1} master ${BRIDGE}
+    ip link set "${1}" up
+    ip link set "${1}" master "${BRIDGE}"
     exit 0
 else
     echo "Error: no interface specified"

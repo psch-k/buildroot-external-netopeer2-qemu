@@ -3,11 +3,11 @@
 BRIDGE=qbr0
 
 if [ -n "${1}" ]; then 
-    ip link set ${1} down
-    ip link set ${1} nomaster
+    ip link set "${1}" down
+    ip link set "${1}" nomaster
 fi
 
-ip link set ${BRIDGE} down
-brctl delbr ${BRIDGE} > /dev/null 2>&1
+ip link set "${BRIDGE}" down
+brctl delbr "${BRIDGE}" > /dev/null 2>&1
 
 exit 0
