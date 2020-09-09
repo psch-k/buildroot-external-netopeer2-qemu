@@ -1,6 +1,0 @@
-config BR2_PACKAGE_ROCKER
-	bool "QEMUs switchdev kernel example"
-
-	help
-	  Example for developping / testing switchdev functionality.
-
