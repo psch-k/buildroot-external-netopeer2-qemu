@@ -39,9 +39,6 @@ cp /etc/sysrepo/yang/*.yang "${MODDIR}"
 checkex sysrepocfg --export="${MODDIR}/ssh-keys.xml" --xpath /ietf-keystore:keystore//* -v ${LOGLEVEL}
 checkex sysrepocfg --export="${MODDIR}/ssh-enable.xml" --xpath /ietf-netconf-server:netconf-server/listen/endpoint -v ${LOGLEVEL}
 
-##### Finally, clean the running datastore:
-rm -f /dev/shm/sr_* /dev/shm/srsub_*
-
 echo "#####"
 echo "##### All done."
 echo "#####" 
