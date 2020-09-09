@@ -5,7 +5,7 @@ INSTALL_NETOP2_SRV_MODULES=1
 INSTALL_SR_PLUGIN_MOD_VERS_MODULES=1
 INSTALL_SR_PLUGIN_IF_MODULES=1
 INSTALL_SR_PLUGIN_TSN_MODULES=0
-ENABLE_TLS_ACCESS=1
+ENABLE_TLS_ACCESS=0
 
 LOGLEVEL=3
 
@@ -16,7 +16,8 @@ INSTALL_SSH_KEYS_RC=0
 MODDIR=~/modules
 OWNER=${3:-`id -un`}
 GROUP=$(id -gn $OWNER)
-ROOT_PERMS="-o ${OWNER} -g ${GROUP} -p 600"
+PERMS=600
+ROOT_PERMS="-o ${OWNER} -g ${GROUP} -p ${PERMS}"
 
 if [ ! -d "${MODDIR}" ]; then
     echo "###"
@@ -63,7 +64,7 @@ killall sysrepo-plugind
 killall sysrepo-plugin-interfaces
 killall sysrepo-tsn
 rm -rf /etc/sysrepo/*
-rm -rf /dev/shm/sr_* /dev/shm/srsub_*
+rm -rf /dev/shm/sr_*
 
 if [ "${INSTALL_NETOP2_SRV_MODULES}" -ne 0 ]; then
 #####################
@@ -71,47 +72,40 @@ if [ "${INSTALL_NETOP2_SRV_MODULES}" -ne 0 ]; then
 #####################
 
 # ietf-netconf-acm
-    checkex sysrepoctl -i ${MODDIR}/ietf-netconf-acm@2018-02-14.yang -v ${LOGLEVEL}
+    checkex sysrepoctl -a -i ${MODDIR}/ietf-netconf-acm@2018-02-14.yang -s ${MODDIR} ${ROOT_PERMS} -v ${LOGLEVEL}
 
 # ietf-netconf
-    checkex sysrepoctl -U ${MODDIR}/ietf-netconf@2013-09-29.yang -s ${MODDIR} -v ${LOGLEVEL}
-    checkex sysrepoctl -c ietf-netconf -e writable-running -e candidate -e rollback-on-error -e validate -e startup -e url -e xpath -o $OWNER -g $GROUP -p 600 -v ${LOGLEVEL}
+    checkex sysrepoctl -a -U ${MODDIR}/ietf-netconf@2013-09-29.yang -s ${MODDIR} ${ROOT_PERMS} -v ${LOGLEVEL}
+    checkex sysrepoctl -a -c ietf-netconf -e writable-running -v ${LOGLEVEL}
+    checkex sysrepoctl -a -c ietf-netconf -e candidate -v ${LOGLEVEL}
+    checkex sysrepoctl -a -c ietf-netconf -e rollback-on-error -v ${LOGLEVEL}
+    checkex sysrepoctl -a -c ietf-netconf -e validate -v ${LOGLEVEL}
+    checkex sysrepoctl -a -c ietf-netconf -e startup -v ${LOGLEVEL}
+    checkex sysrepoctl -a -c ietf-netconf -e url -v ${LOGLEVEL}
+    checkex sysrepoctl -a -c ietf-netconf -e xpath -v ${LOGLEVEL}
 
 # ietf-netconf-monitoring
-    checkex sysrepoctl -i ${MODDIR}/ietf-netconf-monitoring@2010-10-04.yang -v ${LOGLEVEL}
-    checkex sysrepoctl -c ietf-netconf-monitoring -o $OWNER -g $GROUP -v ${LOGLEVEL}
+    checkex sysrepoctl -a -i ${MODDIR}/ietf-netconf-monitoring@2010-10-04.yang -s ${MODDIR} ${ROOT_PERMS} -v ${LOGLEVEL}
 
-# ietf-datastores
-    checkex sysrepoctl -i ${MODDIR}/ietf-datastores@2017-08-17.yang -v ${LOGLEVEL}
+# # ietf-datastores
+#     checkex sysrepoctl -a -i ${MODDIR}/ietf-datastores@2017-08-17.yang -v ${LOGLEVEL}
 
 # ietf-netconf-nmda
-    checkex sysrepoctl -i ${MODDIR}/ietf-netconf-nmda@2019-01-07.yang -e origin -e with-defaults -s ${MODDIR} -v ${LOGLEVEL}
+    checkex sysrepoctl -a -i ${MODDIR}/ietf-netconf-nmda@2019-01-07.yang -e origin -e with-defaults -s ${MODDIR} ${ROOT_PERMS} -v ${LOGLEVEL}
 
 # notification modules 
-    checkex sysrepoctl -i ${MODDIR}/nc-notifications@2008-07-14.yang -s ${MODDIR} -v ${LOGLEVEL}
-    checkex sysrepoctl -c nc-notifications -o $OWNER -g $GROUP -v ${LOGLEVEL}
-    checkex sysrepoctl -i ${MODDIR}/notifications@2008-07-14.yang -v ${LOGLEVEL}
-    checkex sysrepoctl -c notifications -o $OWNER -g $GROUP -v ${LOGLEVEL}
+    checkex sysrepoctl -a -i ${MODDIR}/nc-notifications@2008-07-14.yang -s ${MODDIR} ${ROOT_PERMS} -v ${LOGLEVEL}
+    checkex sysrepoctl -a -i ${MODDIR}/notifications@2008-07-14.yang -s ${MODDIR} ${ROOT_PERMS} -v ${LOGLEVEL}
 
 # ietf-netconf-server modules 
-    checkex sysrepoctl -i ${MODDIR}/ietf-x509-cert-to-name@2014-12-10.yang -v ${LOGLEVEL}
-    checkex sysrepoctl -i ${MODDIR}/ietf-crypto-types@2019-07-02.yang -v ${LOGLEVEL}
-    checkex sysrepoctl -i ${MODDIR}/ietf-keystore@2019-07-02.yang -e keystore-supported -s ${MODDIR} -v ${LOGLEVEL}
-    checkex sysrepoctl -i ${MODDIR}/ietf-truststore@2019-07-02.yang -e truststore-supported -e x509-certificates -s ${MODDIR} -v ${LOGLEVEL}
-    checkex sysrepoctl -i ${MODDIR}/ietf-tcp-common@2019-07-02.yang -e keepalives-supported -s ${MODDIR} -v ${LOGLEVEL}
-    checkex sysrepoctl -i ${MODDIR}/ietf-ssh-server@2019-07-02.yang -e local-client-auth-supported -s ${MODDIR} -v ${LOGLEVEL}
-    checkex sysrepoctl -i ${MODDIR}/ietf-tls-server@2019-07-02.yang -e local-client-auth-supported -s ${MODDIR} -v ${LOGLEVEL}
-    checkex sysrepoctl -i ${MODDIR}/ietf-netconf-server@2019-07-02.yang -e ssh-listen -e tls-listen -e ssh-call-home -e tls-call-home -s ${MODDIR} -v ${LOGLEVEL}
-fi
-
-if [ "${INSTALL_SR_PLUGIN_MOD_VERS_MODULES}" -ne 0 ]; then
-#####################
-## sysrepo-plugin-module-versions:
-#####################
-
-# module-versions
-    checkex sysrepoctl -i ${MODDIR}/sysrepo-module-versions@2019-12-23.yang -s "${MODDIR}" -v ${LOGLEVEL}
-    checkex sysrepoctl -c sysrepo-module-versions -o $OWNER -g $GROUP -v ${LOGLEVEL}
+    checkex sysrepoctl -a -i ${MODDIR}/ietf-x509-cert-to-name@2014-12-10.yang -s ${MODDIR} ${ROOT_PERMS} -v ${LOGLEVEL}
+    checkex sysrepoctl -a -i ${MODDIR}/ietf-crypto-types@2019-07-02.yang -s ${MODDIR} ${ROOT_PERMS} -v ${LOGLEVEL}
+    checkex sysrepoctl -a -i ${MODDIR}/ietf-keystore@2019-07-02.yang -e keystore-supported -s ${MODDIR} ${ROOT_PERMS} -v ${LOGLEVEL}
+    checkex sysrepoctl -a -i ${MODDIR}/ietf-truststore@2019-07-02.yang -e truststore-supported -e x509-certificates -s ${MODDIR} ${ROOT_PERMS} -v ${LOGLEVEL}
+    checkex sysrepoctl -a -i ${MODDIR}/ietf-tcp-common@2019-07-02.yang -e keepalives-supported -s ${MODDIR} ${ROOT_PERMS} -v ${LOGLEVEL}
+    checkex sysrepoctl -a -i ${MODDIR}/ietf-ssh-server@2019-07-02.yang -e local-client-auth-supported -s ${MODDIR} ${ROOT_PERMS} -v ${LOGLEVEL}
+    checkex sysrepoctl -a -i ${MODDIR}/ietf-tls-server@2019-07-02.yang -e local-client-auth-supported -s ${MODDIR} ${ROOT_PERMS} -v ${LOGLEVEL}
+    checkex sysrepoctl -a -i ${MODDIR}/ietf-netconf-server@2019-07-02.yang -e ssh-listen -e tls-listen -e ssh-call-home -e tls-call-home -s ${MODDIR} ${ROOT_PERMS} -v ${LOGLEVEL}
 fi
 
 if [ "${INSTALL_SR_PLUGIN_IF_MODULES}" -ne 0 ]; then
@@ -120,28 +114,31 @@ if [ "${INSTALL_SR_PLUGIN_IF_MODULES}" -ne 0 ]; then
 #####################
 
 # iana-if-type@2017-01-19
-    checkex sysrepoctl -i ${MODDIR}/iana-if-type@2017-01-19.yang -s "${MODDIR}" -v ${LOGLEVEL}
-    checkex sysrepoctl -c iana-if-type -o $OWNER -g $GROUP -v ${LOGLEVEL}
-
-# ietf-ip@2018-02-22
-    checkex sysrepoctl -i ${MODDIR}/ietf-ip@2018-02-22.yang -s "${MODDIR}" -v ${LOGLEVEL}
-    checkex sysrepoctl -c ietf-ip -o $OWNER -g $GROUP -v ${LOGLEVEL}
+    checkex sysrepoctl -a -i ${MODDIR}/iana-if-type@2017-01-19.yang -s "${MODDIR}" ${ROOT_PERMS} -v ${LOGLEVEL}
 
 # ietf-interfaces@2018-02-20
-    checkex sysrepoctl -i ${MODDIR}/ietf-interfaces@2018-02-22.yang -s "${MODDIR}" -v ${LOGLEVEL}
-    checkex sysrepoctl -c ietf-interfaces -e if-mib -o $OWNER -g $GROUP -v ${LOGLEVEL}
+    checkex sysrepoctl -a -i ${MODDIR}/ietf-interfaces@2018-02-20.yang -e if-mib -s "${MODDIR}" ${ROOT_PERMS} -v ${LOGLEVEL}
+
+# ietf-ip@2018-02-22
+    checkex sysrepoctl -a -i ${MODDIR}/ietf-ip@2018-02-22.yang -e ipv4-non-contiguous-netmasks -s "${MODDIR}" ${ROOT_PERMS} -v ${LOGLEVEL}
 
 # ieee802-dot1q-bridge@2018-03-07
-    checkex sysrepoctl -i ${MODDIR}/ieee802-dot1q-bridge@2018-03-07.yang -s "${MODDIR}" -v ${LOGLEVEL}
-    checkex sysrepoctl -c ieee802-dot1q-bridge -o $OWNER -g $GROUP -v ${LOGLEVEL}
+    checkex sysrepoctl -a -i ${MODDIR}/ieee802-dot1q-bridge@2018-03-07.yang -s "${MODDIR}" ${ROOT_PERMS} -v ${LOGLEVEL}
 
 # ieee802-dot1q-sched@2018-09-10
-    checkex sysrepoctl -i ${MODDIR}/ieee802-dot1q-sched@2018-09-10.yang -s "${MODDIR}" -v ${LOGLEVEL}
-    checkex sysrepoctl -c ieee802-dot1q-sched -e scheduled-traffic -o $OWNER -g $GROUP -v ${LOGLEVEL}
+    checkex sysrepoctl -a -i ${MODDIR}/ieee802-dot1q-sched@2018-09-10.yang -e scheduled-traffic -s "${MODDIR}" ${ROOT_PERMS} -v ${LOGLEVEL}
 
 # ieee802-ethernet-interface@2019-06-21
-    checkex sysrepoctl -i ${MODDIR}/ieee802-ethernet-interface@2019-06-21.yang -s "${MODDIR}" -v ${LOGLEVEL}
-    checkex sysrepoctl -c ieee802-ethernet-interface -o $OWNER -g $GROUP -v ${LOGLEVEL}
+    checkex sysrepoctl -a -i ${MODDIR}/ieee802-ethernet-interface@2019-06-21.yang -s "${MODDIR}" ${ROOT_PERMS} -v ${LOGLEVEL}
+fi
+
+if [ "${INSTALL_SR_PLUGIN_MOD_VERS_MODULES}" -ne 0 ]; then
+#####################
+## sysrepo-plugin-module-versions:
+#####################
+
+# module-versions
+    checkex sysrepoctl -a -i ${MODDIR}/sysrepo-module-versions@2019-12-23.yang -s "${MODDIR}" ${ROOT_PERMS} -v ${LOGLEVEL}
 fi
 
 if [ "${INSTALL_SR_PLUGIN_TSN_MODULES}" -ne 0 ]; then
@@ -149,55 +146,49 @@ if [ "${INSTALL_SR_PLUGIN_TSN_MODULES}" -ne 0 ]; then
 ## sysrepo-tsn:
 #####################
 
-#install_yang_module iana-if-type@2017-01-19
-    checkex sysrepoctl -i ${MODDIR}/iana-if-type@2017-01-19.yang -s "${MODDIR}" -v ${LOGLEVEL}
-    checkex sysrepoctl -c iana-if-type ${ROOT_PERMS}
+#install_yang_module ieee802-dot1q-types@2018-03-07
+    checkex sysrepoctl -a -i ${MODDIR}/ieee802-dot1q-types@2018-03-07.yang -s "${MODDIR}" -v ${LOGLEVEL}
+    checkex sysrepoctl -a -c ieee802-dot1q-types ${ROOT_PERMS} -v ${LOGLEVEL}
 
-#install_yang_module ietf-interfaces@2014-05-08
-    checkex sysrepoctl -i ${MODDIR}/ietf-interfaces@2014-05-08.yang -s "${MODDIR}" -v ${LOGLEVEL}
-    checkex sysrepoctl -c ietf-interfaces ${ROOT_PERMS}
-#install_yang_module ieee802-dot1q-types
-    checkex sysrepoctl -i ${MODDIR}/ieee802-dot1q-types.yang -s "${MODDIR}" -v ${LOGLEVEL}
-    checkex sysrepoctl -c ieee802-dot1q-types ${ROOT_PERMS}
-
-#install_yang_module ieee802-dot1q-preemption
-    checkex sysrepoctl -i ${MODDIR}/ieee802-dot1q-preemption.yang -s "${MODDIR}" -v ${LOGLEVEL}
-    checkex sysrepoctl -c ieee802-dot1q-preemption ${ROOT_PERMS}
+#install_yang_module ieee802-dot1q-preemption@2018-09-10
+    checkex sysrepoctl -a -i ${MODDIR}/ieee802-dot1q-preemption@2018-09-10.yang -s "${MODDIR}" -v ${LOGLEVEL}
+    checkex sysrepoctl -a -c ieee802-dot1q-preemption ${ROOT_PERMS} -v ${LOGLEVEL}
 #enable_yang_module_feature ieee802-dot1q-preemption frame-preemption
-    checkex sysrepoctl -c ieee802-dot1q-preemption -e frame-preemption
+    checkex sysrepoctl -a -c ieee802-dot1q-preemption -e frame-preemption -v ${LOGLEVEL}
 
-#install_yang_module ieee802-dot1q-sched
-    checkex sysrepoctl -i ${MODDIR}/ieee802-dot1q-sched.yang -s "${MODDIR}" -v ${LOGLEVEL}
-    checkex sysrepoctl -c ieee802-dot1q-sched ${ROOT_PERMS}
-#enable_yang_module_feature ieee802-dot1q-sched scheduled-traffic
-    checkex sysrepoctl -c ieee802-dot1q-sched -e scheduled-traffic
-
-#install_yang_module ieee802-dot1q-bridge
-    checkex sysrepoctl -i ${MODDIR}/ieee802-dot1q-bridge.yang -s "${MODDIR}" -v ${LOGLEVEL}
-    checkex sysrepoctl -c ieee802-dot1q-bridge ${ROOT_PERMS}
 #install_yang_module ietf-yang-types@2013-07-15
-    checkex sysrepoctl -i ${MODDIR}/ietf-yang-types@2013-07-15.yang -s "${MODDIR}" -v ${LOGLEVEL}
-    checkex sysrepoctl -c ietf-yang-types ${ROOT_PERMS}
-#install_yang_module ieee802-types
-    checkex sysrepoctl -i ${MODDIR}/ieee802-types.yang -s "${MODDIR}" -v ${LOGLEVEL}
-    checkex sysrepoctl -c ieee802-types ${ROOT_PERMS}
-#install_yang_module ietf-inet-types@2013-07-15
-    checkex sysrepoctl -i ${MODDIR}/ietf-inet-types@2013-07-15.yang -s "${MODDIR}" -v ${LOGLEVEL}
-    checkex sysrepoctl -c ietf-inet-types ${ROOT_PERMS}
-#install_yang_module ieee802-dot1q-stream-filters-gates
-    checkex sysrepoctl -i ${MODDIR}/ieee802-dot1q-stream-filters-gates.yang -s "${MODDIR}" -v ${LOGLEVEL}
-    checkex sysrepoctl -c ieee802-dot1q-stream-filters-gates ${ROOT_PERMS}
+    checkex sysrepoctl -a -i ${MODDIR}/ietf-yang-types@2013-07-15.yang -s "${MODDIR}" -v ${LOGLEVEL}
+    checkex sysrepoctl -a -c ietf-yang-types ${ROOT_PERMS} -v ${LOGLEVEL}
+
+#install_yang_module ieee802-types@2018-03-07
+    checkex sysrepoctl -a -i ${MODDIR}/ieee802-types@2018-03-07.yang -s "${MODDIR}" -v ${LOGLEVEL}
+    checkex sysrepoctl -a -c ieee802-types ${ROOT_PERMS} -v ${LOGLEVEL}
+
+###install_yang_module ietf-inet-types@2013-07-15
+##    checkex sysrepoctl -a -i ${MODDIR}/ietf-inet-types@2013-07-15.yang -s "${MODDIR}" -v ${LOGLEVEL}
+##    checkex sysrepoctl -a -c ietf-inet-types ${ROOT_PERMS} -v ${LOGLEVEL}
+
+#install_yang_module ieee802-dot1q-stream-filters-gates@2017-12-20
+    checkex sysrepoctl -a -i ${MODDIR}/ieee802-dot1q-stream-filters-gates@2017-12-20.yang -s "${MODDIR}" -v ${LOGLEVEL}
+    checkex sysrepoctl -a -c ieee802-dot1q-stream-filters-gates ${ROOT_PERMS} -v ${LOGLEVEL}
 #enable_yang_module_feature ieee802-dot1q-stream-filters-gates closed-gate-state
-    checkex sysrepoctl -c ieee802-dot1q-stream-filters-gates -e closed-gate-state
-#install_yang_module ieee802-dot1q-psfp
-    checkex sysrepoctl -i ${MODDIR}/ieee802-dot1q-psfp.yang -s "${MODDIR}" -v ${LOGLEVEL}
-    checkex sysrepoctl -c ieee802-dot1q-psfp ${ROOT_PERMS}
-#install_yang_module ieee802-dot1q-cb-stream-identification
-    checkex sysrepoctl -i ${MODDIR}/ieee802-dot1q-cb-stream-identification.yang -s "${MODDIR}" -v ${LOGLEVEL}
-    checkex sysrepoctl -c ieee802-dot1q-cb-stream-identification ${ROOT_PERMS}
-#install_yang_module ieee802-dot1q-qci-augment
-    checkex sysrepoctl -i ${MODDIR}/ieee802-dot1q-qci-augment.yang -s "${MODDIR}" -v ${LOGLEVEL}
-    checkex sysrepoctl -c ieee802-dot1q-qci-augment ${ROOT_PERMS}
+    checkex sysrepoctl -a -c ieee802-dot1q-stream-filters-gates -e closed-gate-state -v ${LOGLEVEL}
+
+#install_yang_module ieee802-dot1q-psfp@2018-09-10
+    checkex sysrepoctl -a -i ${MODDIR}/ieee802-dot1q-psfp@2018-09-10.yang -s "${MODDIR}" -v ${LOGLEVEL}
+    checkex sysrepoctl -a -c ieee802-dot1q-psfp ${ROOT_PERMS} -v ${LOGLEVEL}
+
+#install_yang_module ieee802-dot1q-cb-stream-identification@2019-05-20
+    checkex sysrepoctl -a -i ${MODDIR}/ieee802-dot1q-cb-stream-identification@2019-05-20.yang -s "${MODDIR}" -v ${LOGLEVEL}
+    checkex sysrepoctl -a -c ieee802-dot1q-cb-stream-identification ${ROOT_PERMS} -v ${LOGLEVEL}
+
+#install_yang_module ieee802-dot1q-qci-augment@2019-05-20
+    checkex sysrepoctl -a -i ${MODDIR}/ieee802-dot1q-qci-augment@2019-05-20.yang -s "${MODDIR}" -v ${LOGLEVEL}
+    checkex sysrepoctl -a -c ieee802-dot1q-qci-augment ${ROOT_PERMS} -v ${LOGLEVEL}
+
+#install_yang_module nxp-bridge-vlan-tc-flower@2020-04-02
+    checkex sysrepoctl -a -i ${MODDIR}/nxp-bridge-vlan-tc-flower@2020-04-02.yang -s "${MODDIR}" -v ${LOGLEVEL}
+    checkex sysrepoctl -a -c nxp-bridge-vlan-tc-flower ${ROOT_PERMS} -v ${LOGLEVEL}
 fi
 
 if [ "${ENABLE_TLS_ACCESS}" -ne 0 ]; then
