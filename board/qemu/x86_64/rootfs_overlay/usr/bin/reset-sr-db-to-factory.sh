@@ -156,9 +156,9 @@ if [ "${INSTALL_SR_PLUGIN_TSN_MODULES}" -ne 0 ]; then
 #enable_yang_module_feature ieee802-dot1q-preemption frame-preemption
     checkex sysrepoctl -a -c ieee802-dot1q-preemption -e frame-preemption -v ${LOGLEVEL}
 
-#install_yang_module ietf-yang-types@2013-07-15
-    checkex sysrepoctl -a -i ${MODDIR}/ietf-yang-types@2013-07-15.yang -s "${MODDIR}" -v ${LOGLEVEL}
-    checkex sysrepoctl -a -c ietf-yang-types ${ROOT_PERMS} -v ${LOGLEVEL}
+###install_yang_module ietf-yang-types@2013-07-15
+##    checkex sysrepoctl -a -i ${MODDIR}/ietf-yang-types@2013-07-15.yang -s "${MODDIR}" -v ${LOGLEVEL}
+##    checkex sysrepoctl -a -c ietf-yang-types ${ROOT_PERMS} -v ${LOGLEVEL}
 
 #install_yang_module ieee802-types@2018-03-07
     checkex sysrepoctl -a -i ${MODDIR}/ieee802-types@2018-03-07.yang -s "${MODDIR}" -v ${LOGLEVEL}
